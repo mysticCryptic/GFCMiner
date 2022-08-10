@@ -1,38 +1,73 @@
-.App {
+.body{
+  background-color: white;
+  color: black;
+  height: 20vh;
+  width: 20vw;
+}
+
+.connectbutton{
+  background: #00000010;
+  box-shadow: 0px 1px 10px #17b2ff;
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 5px 12px;
+  font-size: large;
+  font-weight: 200;
+}
+
+.navbarfont {
+  font-family: "SF Pro Display";
+  font-weight: 300;
+}
+
+.minerapp{
   text-align: center;
+  background: linear-gradient(270deg, #5f6bcc, #222d8a, #000000);
+  background-size: 600% 600%;
+
+  -webkit-animation: AnimationName 0s ease infinite;
+  -moz-animation: AnimationName 0s ease infinite;
+  animation: AnimationName 0s ease infinite;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@-webkit-keyframes AnimationName {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@-moz-keyframes AnimationName {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@keyframes AnimationName {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.minerform {
+  background: radial-gradient(circle at 50% 50%, #090f11, #0c1519, #101e2b, #0f223c, #0e2144);
+  font-family: "SF Pro Display";
+  font-weight: 300;
   color: white;
+  box-shadow: 0 0 1px 1px #17b2ff;
+  -webkit-border-radius: 20px !important;
+  -moz-border-radius: 20px !important;
+  border-radius: 20px !important;
+  -webkit-border: 20px !important;
+  -moz-border: 20px !important;
+  border: 20px !important;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.goldeffect {
+  font-family: "SF Pro Display";
+  font-weight: 300;
+  animation: glow2 3s infinite alternate;
+  background: linear-gradient(
+    to bottom,
+    rgb(1, 53, 130),
+    rgba(255, 0, 0, 0)
+  )
 }
