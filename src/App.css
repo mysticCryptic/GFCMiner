@@ -23,7 +23,7 @@
 .minerapp{
   text-align: center;
   background: linear-gradient(270deg, #5f6bcc, #222d8a, #000000);
-  background-size: 600% 600%;
+  background-size: 600%;
 
   -webkit-animation: AnimationName 0s ease infinite;
   -moz-animation: AnimationName 0s ease infinite;
@@ -59,15 +59,4 @@
   -webkit-border: 20px !important;
   -moz-border: 20px !important;
   border: 20px !important;
-}
-
-.goldeffect {
-  font-family: "SF Pro Display";
-  font-weight: 300;
-  animation: glow2 3s infinite alternate;
-  background: linear-gradient(
-    to bottom,
-    rgb(1, 53, 130),
-    rgba(255, 0, 0, 0)
-  )
 }
