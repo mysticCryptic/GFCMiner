@@ -1,4 +1,8 @@
 /**
+ *Submitted for verification at BscScan.com on 2022-08-11
+*/
+
+/**
  *Submitted for verification at BscScan.com on 2021-11-06
 */
 
@@ -241,7 +245,7 @@ abstract contract Context {
 }
 abstract contract ERC20 {
     function totalSupply() virtual public returns (uint);
-    function balanceOf(address tokenOwner) virtual public returns (uint balance);
+    function balanceOf(address tokenOwner) virtual public view returns (uint balance);
     function allowance(address tokenOwner, address spender) virtual public returns (uint remaining);
     function transfer(address to, uint tokens)virtual public returns (bool success);
     function approve(address spender, uint tokens) virtual public returns (bool success);
@@ -298,11 +302,11 @@ contract MinerContract is Context, Ownable {
     using SafeMath for uint256;
 
 
-    address gfc = 0xEc0f013A108d3639219Fa8210D5c7435E112332F;
+    address gfc = 0x299051d2Fb9ef61e7b387D56cef3889BdA6fc9d6;
     uint256 private EGGS_TO_HATCH_1MINERS = 1080000;//for final version should be seconds in a day
     uint256 private PSN = 10000;
     uint256 private PSNH = 5000;
-    uint256 private devFeeVal = 3;
+    uint256 private devFeeVal = 4;
     bool private initialized = false;
     address private ceoAddress;
     mapping (address => uint256) private hatcheryMiners;
@@ -355,7 +359,7 @@ contract MinerContract is Context, Ownable {
         ERC20(gfc).transfer(msg.sender,SafeMath.sub(eggValue,fee));
     }
     
-    function beanRewards(address adr) public returns(uint256) {
+    function beanRewards(address adr) public view returns(uint256) {
         uint256 hasEggs = getMyEggs(adr);
         uint256 eggValue = calculateEggSell(hasEggs);
         return eggValue;
@@ -378,7 +382,7 @@ contract MinerContract is Context, Ownable {
         return SafeMath.div(SafeMath.mul(PSN,bs),SafeMath.add(PSNH,SafeMath.div(SafeMath.add(SafeMath.mul(PSN,rs),SafeMath.mul(PSNH,rt)),rt)));
     }
     
-    function calculateEggSell(uint256 eggs) public returns(uint256) {
+    function calculateEggSell(uint256 eggs) public view returns(uint256) {
         return calculateTrade(eggs,marketEggs, getBalance());
     }
     
@@ -405,7 +409,7 @@ contract MinerContract is Context, Ownable {
     }
     
     //return GFC within contract
-    function getBalance() public returns(uint256) {
+    function getBalance() public view returns(uint256) {
         return ERC20(gfc).balanceOf(address(this));
     }
     

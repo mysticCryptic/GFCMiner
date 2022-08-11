@@ -2,22 +2,24 @@ import { Button, ButtonGroup } from 'react-bootstrap';
 import { ethers } from "ethers";
 import { useState } from "react";
 import MinerContract from "./artifacts/contracts/MinerContract.sol/MinerContract.json";
-import CoinContract from "./artifacts/contracts/GalaxyFuelCoin.json";
+import CoinContract from "./GalaxyFuelCoin.json";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'sf-font';
 import { TASK_COMPILE_SOLIDITY_LOG_RUN_COMPILER_END } from 'hardhat/builtin-tasks/task-names';
 
-const minerAddress = "0x1BbE23f1fE058769Af9132AeEf021905fdBDdE6f";
-const coinAddress = "0xEc0f013A108d3639219Fa8210D5c7435E112332F";
+const minerAddress = "0x569c244A2C7eD172c091DA803aDa768488B885AF";
+const coinAddress = "0x299051d2Fb9ef61e7b387D56cef3889BdA6fc9d6";
 
 function App() {
 
   //property variables
   const [message, setEggs] = useState("");
-  const [currentMiners, setMiners] = useState("");
+  const [currentMiners, setMiners] = useState("# of ");
   const [userAddress, setAddress] = useState("Please Connect Wallet");
   const [status, setStatus] = useState("Connect Your Wallet");
+  const [tokenBalance, setBalance] = useState("");
+  const [minedTokens, updatePending] = useState("");
 
 
 
@@ -29,7 +31,7 @@ function App() {
     const signerAddress = await signer.getAddress();
     setAddress(signerAddress);
     setStatus('Connected');
-
+    fetchData();
   }
 
   //initialize coin contract and check permisions
@@ -46,11 +48,11 @@ function App() {
         const newBalance = Number(balance);
         const allowance = await contract.allowance(signerAddress, minerAddress);
         const newAllowance = Number(allowance);
-        console.log("balance: ", newBalance);
-        console.log("allowance: ", newAllowance);
-        if (balance==allowance || balance>allowance){
-          console.log("nigger");
-          const approval = await contract2.approve(minerAddress, balance);
+        //const newAllowance = Number(allowance);
+        setBalance(newBalance/(10**9));
+        console.log(newBalance, newAllowance)
+        if (newBalance!=newAllowance || newBalance>newAllowance){
+          const approval = await contract2.approve(minerAddress, (balance * 2));
         } else {
           console.log('allowance is chilling')
         }
@@ -65,7 +67,7 @@ function App() {
 
   //fetch current values stored in contract
 
-  async function fetchMiners() {
+  async function fetchData() {
     if (typeof window.ethereum !== "undefined") {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(minerAddress, MinerContract.abi, provider)
@@ -75,7 +77,11 @@ function App() {
       try {
         const data = await contract.getMyMiners(signerAddress);
         const newData = Number(data);
-        console.log("data: ", newData);
+
+        const eggs = await contract.getEggsSinceLastHatch(signerAddress);
+        const pending = await contract.calculateEggSell(eggs);
+        updatePending((Number(pending)/10**9));
+        //console.log("data: ", newData);
         setMiners(newData);
         setAddress(signerAddress);
       } catch (error) {
@@ -89,12 +95,13 @@ function App() {
     if (message !== "") {
       if (typeof window.ethereum !== "undefined") {
         await requestAccount();
+        await initCoin();
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const signerAddress = signer.getAddress();
 
         const contract = new ethers.Contract(minerAddress, MinerContract.abi, signer);
-        const newAmount = ethers.utils.parseUnits(message, 18);
+        const newAmount = ethers.utils.parseUnits(message, 9);
         const transaction = await contract.buyEggs(signerAddress, newAmount);
 
         setEggs("");
@@ -102,7 +109,7 @@ function App() {
         //waits for transaction to finish and logs new minertotal
 
         await transaction.wait();
-        fetchMiners();
+        fetchData();
         console.log(transaction);
         /*print total miners
         const miners = await contract.getMyMiners(signerAddress);
@@ -113,6 +120,44 @@ function App() {
     }
   }
 
+  async function sellMiners() {
+      if (typeof window.ethereum !== "undefined") {
+        console.log("cum")
+        await requestAccount();
+        await initCoin();
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const signerAddress = signer.getAddress();
+
+        const contract = new ethers.Contract(minerAddress, MinerContract.abi, signer);
+        const transaction = await contract.sellEggs();
+        await transaction.wait();
+        fetchData();
+        console.log(transaction);
+        /*print total miners
+        const miners = await contract.getMyMiners(signerAddress);
+        const newMiners = Number(miners);
+        console.log(newMiners);
+        */
+      }
+    
+  }
+
+  async function compound() {
+      if (typeof window.ethereum !== "undefined") {
+        await requestAccount();
+        await initCoin();
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const signerAddress = signer.getAddress();
+
+        const contract = new ethers.Contract(minerAddress, MinerContract.abi, signer);
+        const transaction = await contract.hatchEggs(signerAddress);
+        await transaction.wait();
+        fetchData();
+      }
+    
+  }
   return (
     <div className="minerapp">
       <nav className="navbar navbarfont navbar-expand-md navbar-dark bg-transparent mb-4">
@@ -144,29 +189,33 @@ function App() {
         <form>
           <div className="row pt-3">
             <div>
-              <h1 className="pt-2" style={{ fontWeight: "30" }}>Galaxy Fuel Miner</h1>
+              <h1 className="pt-2" style={{ fontWeight: "30" }}>Gulaxy Fuel Miner</h1>
             </div>
-            <h3># of miners</h3>
+            <h3>{currentMiners} Fuel Harvesters</h3>
             <div>
-              # of GFC to compound or collect
-              <Button className="button-style m-1" style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #000000" }}>
+            <div className ="bold">
+              <label> Your Balance: {tokenBalance} GFC</label>
+              </div>
+              <div>
+                <label className='bold'>Tokens to Collect: {minedTokens}</label>
+              </div>
+              <div>
+              <Button className="button-style m-1" onClick={compound} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #000000" }}>
                 Compound
               </Button>
-              <Button className="button-style m-1" style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #000000" }}>
+              <Button className="button-style m-1" onClick={sellMiners} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #000000" }}>
                 Sell Miners
               </Button>
-
-              //testing approval
               <Button className="button-style m-1" onClick={initCoin} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #000000" }}>
                 approve
               </Button>
-
+              </div>
+              </div>
             </div>
-          </div>
           <div>
             <label style={{ fontWeight: "300", fontSize: "18px" }}>Purchase Miners</label>
           </div>
-          <input type="text" placeholder='0 '/>
+          <input onChange={(e) => setEggs(e.target.value)} value={message} type="text" placeholder='0 '/>
           <label> GFC</label>
           <div className="row px-2 pb-2 row-style">
             <div>

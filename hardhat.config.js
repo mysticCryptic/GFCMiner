@@ -10,7 +10,7 @@ module.exports = {
   },
 
   networks: {
-    BSCtst: {
+    BSC: {
       url: secret.url,
       accounts: [secret.key],
     }
